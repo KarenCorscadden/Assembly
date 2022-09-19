@@ -18,17 +18,10 @@ main:
 
 	move $s0, $v0 # copy the inputted integer (number of primes to print) into $s0
   li $s1, 2 # initialize $s1 with the smallest possible prime value
-  li $s2, 2 # initialize $s2 with the first useful root value (root of a square to use to limit division iterations in test_prime)
-  li $s3, 4 # initialize $s3 with $s2^2
 
 loop:
   beq $s0, $zero, done		# exit if the number of primes left to print is zero
-  ble $s1, $s3, skip  # do not increment the root if the prime to test is less than or equal to the square
-  addi $s2, $s2, 1  # increment the root if it's too small
-  mul $s3, $s2, $s2 # recalculate the square if the root was incremented
-skip:
   move $a0, $s1 # copy current int to test for primeness into $a0 to pass to test_prime
-  move $a1, $s2 # copy current base into $a1 to pass to test_prime
   jal test_prime  # tests $a0 for primeness, returns in $v0
   beq $v0, $zero, main_not_prime
   move $a0, $s1 # copy the current prime int into $a0 to pass to print function
@@ -36,7 +29,7 @@ skip:
   addi $s0, $s0, -1 # decrements the number of primes left to print
 main_not_prime:
   addi $s1, $s1, 1  # increment value to test for primeness
-  j loop  # jump to top of loop loop
+  j loop  # jump to top of loop
 
 done:
 	li $v0, 10		# 10 = exit
@@ -63,12 +56,19 @@ print_prime:
 # returns in $v0 1 if it is prime, else 0
 test_prime:
   li $t0, 2 # initialize $t0 with smallest value to divide by
+  li $t1, 2 # initialize $t1 with the first useful root value (root of a square to use to limit division iterations)
+  li $t2, 4 # initialize $t2 with $t1^2
   beq $a0, $t0, is_prime  # if the number being checked is 2, it is prime
+base_loop:
+  ble $a0, $t2, test_loop  # do not increment the root if the prime to test is less than or equal to the square
+  addi $t1, $t1, 1  # increment the root if it's too small
+  mul $t2, $t1, $t1 # recalculate the square if the root was incremented
+  j base_loop # if the base was incremented recheck to see if it needs to be incremented more
 test_loop:
   div $a0, $t0  # $hi = prime_candidate % division_value
-  mfhi $t1  # move remainder of division to $t1 so that it can be used in conditional branch
-  beq $t1, $zero, not_prime  # if no remainder then the number is not prime
-  beq $a1, $t0, is_prime # if the tested value is equal to the root, the number is prime
+  mfhi $t3  # move remainder of division to $t1 so that it can be used in conditional branch
+  beq $t3, $zero, not_prime  # if no remainder then the number is not prime
+  beq $t1, $t0, is_prime # if the tested value is equal to the root, the number is prime
   addi $t0, $t0, 1  # increment number to divide by
   j test_loop # return to beginning of loop
 is_prime:
