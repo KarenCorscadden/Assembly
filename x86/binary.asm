@@ -14,7 +14,7 @@ _start:
 	mov eax, sinput
 	call atoi
 
-	call hprint
+	call bprint
 	call printLF
 	call quit
 
