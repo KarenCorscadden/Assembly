@@ -20,6 +20,8 @@ _start:
 readit:
 	xor ebx, ebx
 	mov bl, [sinput + ecx]
+	cmp bl, 44
+	je comma
 	cmp bl, 48
 	jl zero
 	cmp bl, 57
@@ -31,12 +33,33 @@ readit:
 	xor ebx, ebx
 	inc ecx
 	mov bl, [sinput + ecx]
+	cmp bl, 44
+	je comma
 	cmp bl, 48
 	jl zero
 	cmp bl, 57
 	jg zero
 	sub bl, 48
 	add al, bl
+	mov dl, 10
+	mul dl
+	xor ebx, ebx
+	inc ecx
+	mov bl, [sinput + ecx]
+	cmp bl, 44
+	je comma
+	cmp bl, 48
+	jl zero
+	cmp bl, 57
+	jg zero
+	sub bl, 48
+	add al, bl
+	mov dl, 10
+	mul dl
+	inc ecx
+comma:
+	mov dl, 10
+	div dl
 	pop edx
 	mov [soutput + edx], al
 	inc edx
