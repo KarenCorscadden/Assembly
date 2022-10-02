@@ -1,4 +1,99 @@
 ;-------------------
+; void xor(string)
+; xor function, key is ecx
+xor:
+        push ecx
+xor_nextchar:
+        xor edx, edx
+        cmp byte [eax], 0
+        jz xor_finished
+        mov dl, [eax]
+	xor edx, ecx
+        mov [ebx], dl
+        inc eax
+        inc ebx
+        jmp xor_nextchar
+
+xor_finished:
+        xor ecx, ecx
+        inc ebx
+        mov [ebx], ecx
+        pop ecx
+        ret
+
+
+
+;-------------------
+; void rotfb(string)
+; Caesar cipher function, rotates forward then backwards
+; by ecx places
+rotfb:
+        push ecx
+rotfb_nextchar:
+        xor edx, edx
+        cmp byte [eax], 0
+        jz rotfb_finished
+        mov dl, cl
+        add dl, [eax]
+        cmp dl, 90
+        jle fb_not_over1
+        sub dl, 26
+fb_not_over1:
+        mov [ebx], edx
+        inc eax
+        inc ebx
+
+        xor edx, edx
+        cmp byte [eax], 0
+        jz rotfb_finished
+        sub dl, cl
+        add dl, [eax]
+        cmp dl, 65
+        jge fb_not_over2
+        add dl, 26
+fb_not_over2:
+        mov [ebx], edx
+        inc eax
+        inc ebx
+        jmp rotfb_nextchar
+
+
+rotfb_finished:
+        xor ecx, ecx
+        inc ebx
+        mov [ebx], ecx
+        pop ecx
+        ret
+
+
+;-------------------
+; void rot(string)
+; Caesar cipher function, rotates forward by ecx places
+rot:
+	push ecx
+rot_nextchar:
+	xor edx, edx
+        cmp byte [eax], 0
+        jz rot_finished
+	mov dl, cl
+	add dl, [eax]
+	cmp dl, 90
+	jle not_over
+	sub dl, 26
+not_over:
+	mov [ebx], edx
+        inc eax
+	inc ebx
+        jmp rot_nextchar
+
+rot_finished:
+	xor ecx, ecx
+	inc ebx
+	mov [ebx], ecx
+        pop ecx
+	ret
+
+;-------------------
 ; void b58cprint(Integer number)
 ; Base58Check printing function (itoa_base58check)
 b58cprint:
